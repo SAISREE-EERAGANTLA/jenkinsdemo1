@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b912d37c-cd46-4f6f-8c2c-57e95ade0289" >
+		<http:listener-connection host="${secure::http.host}" port="${secure::http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="d7abb91a-b1cd-40f4-9df3-f9e28545e603" file="local.properties" />
+	<global-property doc:name="Global Property" doc:id="42c4472f-dc2c-4d26-82ad-ee4425b9239a" name="mule.env" value="local" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="a7636bb1-8d0c-402f-8e50-a9b5716d1152" file="${mule.env}.properties" key="${secure.key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<flow name="jenkin-demoFlow" doc:id="09534502-0480-47bd-b1b6-d204789a2dae" >
+		<http:listener doc:name="Listener" doc:id="edc5ae35-a28f-4141-9e9c-19ca092ef849" config-ref="HTTP_Listener_config" path="jenkin"/>
+		<ee:transform doc:name="Transform Message" doc:id="00adbb5c-8048-49a8-b166-a1f0a434bb84">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"prop": "we are deploying this app into jenkin"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
